@@ -39,9 +39,9 @@ class Vislice:
 
 
 class Igra:
-    def __init__(self, geslo, crke=[]):
+    def __init__(self, geslo, crke=None):
         self.geslo = geslo
-        self.crke = crke
+        self.crke = crke or list()
     def napacne_crke(self):
         return [c for c in self.crke if c.upper() not in self.geslo.upper()]
 

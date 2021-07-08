@@ -1,15 +1,18 @@
+import json
 STEVILO_DOVOLJENIH_NAPAK = 10
 PRAVILNA_CRKA, PONOVLJENA_CRKA, NAPACNA_CRKA = '+', 'o', '-'
 
 ZACETEK = "S"
 
 ZMAGA, PORAZ = 'W', 'X'
-
+DATOTEKA_S_STANJEM = 'stanje.json'
+DATOTEKA_Z_BESEDAMI = 'besede.txt'
 
 class Vislice:
-    def __init__(self):
+    def __init__(self, datoteka_s_stanjem):
         self.igre = {}
         self.max_id = 0
+        self.datoteka_s_stanjem = datoteka_s_stanjem
 
     def prost_id_igre(self):
         self.max_id += 1
@@ -22,22 +25,35 @@ class Vislice:
             return m + 1
     """
     def nova_igra(self):
-        nov_id = self.prost_id_igre()
-        sveza_igra = nova_igra()
-
-        self.igre[nov_id] = (sveza_igra, ZACETEK)
-        
-        return nov_id
+        self.nalozi_igre_iz_datoteke()
+        id_igre = self.prost_id_igre()
+        igra = nova_igra()
+        self.igre[id_igre] = (igra, ZACETEK) 
+        self.zapisi_igre_v_datoteko()       
+        return id_igre
     
     def ugibaj(self, id_igre, crka):
+        self.nalozi_igre_iz_datoteke()
         igra, _ = self.igre[id_igre]
-        novo_stanje = igra.ugibaj(crka)
-        self.igre[id_igre] = (igra, novo_stanje)
+        stanje = igra.ugibaj(crka)
+        self.igre[id_igre] = (igra, stanje)
+        self.zapisi_igre_v_datoteko()
+    
+    def nalozi_igre_iz_datoteke(self):
+        with open(self.datoteka_s_stanjem, encoding='utf-8') as f:
+            igre = json.load(f)
+            self.igre = {int(id_igre): (Igra(geslo, crke), stanje)
+                        for id_igre, (geslo, crke, stanje) in igre.items()}
+
+    def zapisi_igre_v_datoteko(self):
+        with open(self.datoteka_s_stanjem, 'w', encoding='utf-8') as f:
+            igre = {id_igre: (igra.geslo, igra.crke, stanje)
+                        for id_igre, (igra,stanje) in self.igre.items()}
+            json.dump(igre, f)
+        
 
 
     
-
-
 class Igra:
     def __init__(self, geslo, crke=None):
         self.geslo = geslo
@@ -63,7 +79,7 @@ class Igra:
             if x.upper() in self.crke:
                 novo += x
             else:
-                novo += '_'
+                novo += '_ '
         return novo
         #return ''.join([c if c in self.crke else '_' for c in self.geslo.upper()])#
     def nepravilni_ugibi(self):
@@ -86,7 +102,9 @@ class Igra:
             else:
                 return NAPACNA_CRKA
 
-with open('besede.txt', encoding="utf-8") as f:
+
+
+with open(DATOTEKA_Z_BESEDAMI, encoding="utf-8") as f:
     bazen_besed = f.read().split()
 
 import random

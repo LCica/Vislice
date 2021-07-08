@@ -1,10 +1,12 @@
-%from model import ZMAGA,PORAZ
-<!DOCTYPE html>
-<html>
+% from model import ZMAGA,PORAZ
+% rebase('base.tpl')
+
+
+
 <head>
     <meta charset="UTF-8">
 </head>
-<body>
+
 
   <h1>Vislice</h1>
   <h2>Igraš igro:</h2>
@@ -24,13 +26,13 @@
 
 % if stanje == ZMAGA:
   <h3>Bravo zmagal si</h3>
-  <form action="/igra/" method="post">
+  <form action="/nova-igra/" method="post">
     <button type="submit">Nova igra</button>
   </form>
 % elif stanje == PORAZ:
   <h3>Ojoj izgubil si</h3>
   <h3>Pravilno geslo je bilo: {{ igra.geslo }}</h3>
-  <form action="/igra/" method="post">
+  <form action="/nova-igra/" method="post">
     <button type="submit">Nova igra</button>
   </form>
 
@@ -42,6 +44,3 @@
     <input type="submit">
   </form>
 % end
-</body>
-
-</html>

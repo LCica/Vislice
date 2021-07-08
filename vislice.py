@@ -1,7 +1,10 @@
 import bottle
 import model
 
-visilice = model.Vislice()
+SKRIVNOST = 'moja skrivnost'
+
+
+visilice = model.Vislice(model.DATOTEKA_S_STANJEM)
 
 
 @bottle.get("/")
@@ -9,28 +12,26 @@ def index():
     return bottle.template("index.tpl")
 
 
-@bottle.post("/igra/")
+@bottle.post("/nova-igra/")
 def nova_igra():
     id_igre = visilice.nova_igra()
-    novi_url = f"/igra/{id_igre}/"
+    bottle.response.set_cookie('idigre', 'idigre{}'.format(id_igre), secret=SKRIVNOST, path='/')
+    bottle.redirect("/igra/")
 
-    bottle.redirect(novi_url)
-
-@bottle.get("/igra/<id_igre:int>/")
-def pokazi_igro(id_igre):
+@bottle.get("/igra/")
+def pokazi_igro():
+    id_igre = int(bottle.request.get_cookie('idigre', secret=SKRIVNOST).split('e')[1])
     trenutna_igra, trenutno_stanje = visilice.igre[id_igre]
+    return bottle.template("igra.tpl", igra=trenutna_igra, stanje=trenutno_stanje)
 
-    return bottle.template("igra.tpl",
-        igra=trenutna_igra, stanje=trenutno_stanje
-    )
-
-@bottle.post("/igra/<id_igre:int>/")
-def ugibaj_na_igri(id_igre):
+@bottle.post("/igra/")
+def ugibaj_na_igri():
+    id_igre = int(bottle.request.get_cookie('idigre', secret=SKRIVNOST).split('e')[1])
     ugibana = bottle.request.forms["crka"]
 
     visilice.ugibaj(id_igre,ugibana)
 
-    return bottle.redirect(f"/igra/{id_igre}/")
+    return bottle.redirect("/igra/")
 
 @bottle.get("/img/<file_path:path>")
 def img_static(file_path):

@@ -84,7 +84,7 @@ class Igra:
         #return ''.join([c if c in self.crke else '_' for c in self.geslo.upper()])#
     def nepravilni_ugibi(self):
         return ' '.join(self.napacne_crke())
-        
+         
     def ugibaj(self, crka):
         crka = crka.upper()
         if crka in self.crke:

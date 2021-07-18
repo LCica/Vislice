@@ -36,7 +36,7 @@ def ugibaj_na_igri():
 @bottle.get("/img/<file_path:path>")
 def img_static(file_path):
     return bottle.static_file(file_path, "img")
-
+#hhh
 
 
 
